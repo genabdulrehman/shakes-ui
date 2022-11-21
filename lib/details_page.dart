@@ -22,6 +22,12 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: Column(
+        children: [
+          Image.asset("assets/shake1.png"),
+        ],
+      ),
+    );
   }
 }

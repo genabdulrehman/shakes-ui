@@ -5,7 +5,10 @@ import 'package:blur/blur.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:shakes_app/details_page.dart';
+
+import 'widgets/shake_widget.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -14,7 +17,9 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
   List<String> _shakes = [
     "assets/shake.png",
     "assets/shake1.png",
@@ -27,6 +32,18 @@ class _HomePageState extends State<HomePage> {
   bool _coffeeSelected = false;
   bool _cocktailsSelected = false;
   bool _softSelected = false;
+  int _itemNumber = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _animationController = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: this,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,14 +63,24 @@ class _HomePageState extends State<HomePage> {
             Positioned(
               top: 60,
               left: 10,
-              child: BlurryContainer(
-                height: 150,
-                width: 150,
-                borderRadius: BorderRadius.circular(100),
-                color: Colors.red.withOpacity(.2),
-                blur: 2,
-                child: Container(),
-              ),
+              child: AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return Transform.translate(
+                      offset: Offset(
+                        20 * _animationController.value * _itemNumber,
+                        23 * _animationController.value,
+                      ),
+                      child: BlurryContainer(
+                        height: 150,
+                        width: 150,
+                        borderRadius: BorderRadius.circular(100),
+                        color: Colors.red.withOpacity(.2),
+                        blur: 2,
+                        child: Container(),
+                      ),
+                    );
+                  }),
             ),
             Positioned(
               bottom: 60,
@@ -374,14 +401,16 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       )),
+
+                                  // * vertical divider
                                   Positioned(
                                     left: 100,
-                                    top: 60,
+                                    top: 80,
                                     // bottom: 10,
                                     child: Column(
                                       children: [
                                         Container(
-                                          height: 450,
+                                          height: 500,
                                           width: 1,
                                           color: Colors.white,
                                         ),
@@ -408,15 +437,17 @@ class _HomePageState extends State<HomePage> {
                                                 height: 650,
                                                 width: 250,
                                                 child: ListWheelScrollView(
+                                                  onSelectedItemChanged: (a) {
+                                                    print(a);
+                                                    setState(() {
+                                                      _itemNumber = a;
+                                                    });
+                                                  },
                                                   itemExtent: 250,
                                                   children: [
                                                     GestureDetector(
                                                       onTap: () {
-                                                        Get.to(DetailsPage(
-                                                            img: _shakes[0],
-                                                            price: "543",
-                                                            title: "Mix shake",
-                                                            desc: "xft"));
+                                                        print("Hel");
                                                       },
                                                       child: ShakeWidget(
                                                         shakes: "Mix shake",
@@ -464,120 +495,6 @@ class _HomePageState extends State<HomePage> {
             ]),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ShakeWidget extends StatelessWidget {
-  const ShakeWidget({
-    Key? key,
-    required this.shakes,
-    required this.shakesImg,
-    required this.price,
-  });
-
-  final String shakes;
-  final String shakesImg;
-  final String price;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 20, right: 20),
-      child: Stack(
-        children: [
-          Center(
-            child: SlideInRight(
-              duration: Duration(milliseconds: 100),
-              child: Container(
-                height: 220,
-                width: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(300),
-                    topRight: Radius.circular(30),
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.redAccent.withOpacity(.4),
-                        blurRadius: 10,
-                        spreadRadius: 10,
-                        offset: Offset(3, 5)),
-                  ],
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: 200,
-                    width: 100,
-                    child: ZoomIn(
-                      delay: Duration(milliseconds: 100),
-                      child: Image.asset(
-                        shakesImg,
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20, right: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Icons.favorite_outline,
-                            color: Colors.brown,
-                            size: 30,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            shakes,
-                            maxLines: 2,
-                            style: TextStyle(
-                                color: Colors.brown,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            "\$${price}",
-                            maxLines: 2,
-                            style: TextStyle(
-                                color: Colors.brown,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
