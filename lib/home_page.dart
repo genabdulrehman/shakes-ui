@@ -19,7 +19,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController;
+  late AnimationController controller;
+  late Animation<double> animation;
   List<String> _shakes = [
     "assets/shake.png",
     "assets/shake1.png",
@@ -38,10 +39,11 @@ class _HomePageState extends State<HomePage>
   void initState() {
     // TODO: implement initState
     super.initState();
-    _animationController = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-    );
+    controller =
+        new AnimationController(duration: Duration(seconds: 5), vsync: this)
+          ..addListener(() => setState(() {}));
+    animation = Tween(begin: -200.0, end: 200.0).animate(controller);
+    controller.forward();
   }
 
   @override
@@ -61,37 +63,38 @@ class _HomePageState extends State<HomePage>
         child: Stack(
           children: [
             Positioned(
-              top: 60,
+              top: 10,
               left: 10,
-              child: AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(
-                        20 * _animationController.value * _itemNumber,
-                        23 * _animationController.value,
-                      ),
-                      child: BlurryContainer(
-                        height: 150,
-                        width: 150,
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.red.withOpacity(.2),
-                        blur: 2,
-                        child: Container(),
-                      ),
-                    );
-                  }),
+              child: Transform.translate(
+                offset: Offset(
+                  animation.value,
+                  animation.value,
+                ),
+                child: BlurryContainer(
+                  height: 150,
+                  width: 150,
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.red.withOpacity(.2),
+                  blur: 2,
+                  child: Container(),
+                ),
+              ),
             ),
-            Positioned(
-              bottom: 60,
-              left: 150,
-              child: BlurryContainer(
-                height: 150,
-                width: 150,
-                borderRadius: BorderRadius.circular(100),
-                color: Colors.red.withOpacity(.2),
-                blur: 2,
-                child: Container(),
+            Bounce(
+              child: Positioned(
+                bottom: 60,
+                left: 150,
+                child: Transform.translate(
+                  offset: Offset(animation.value * -1, animation.value * -1),
+                  child: BlurryContainer(
+                    height: 150,
+                    width: 150,
+                    borderRadius: BorderRadius.circular(100),
+                    color: Colors.red.withOpacity(.2),
+                    blur: 2,
+                    child: Container(),
+                  ),
+                ),
               ),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
