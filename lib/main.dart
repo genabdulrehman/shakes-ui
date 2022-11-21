@@ -6,7 +6,25 @@ import 'home_page.dart';
 void main() {
   runApp(const MyApp());
 }
-
+s{
+  import 'package:flutter/material.dart';
+  
+  class Screen extends StatelessWidget {
+    const Screen({Key? key}) : super(key: key);
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Screen'),
+        ),
+        body: Center(
+          child: Text('Screen'),
+        ),
+      );
+    }
+  }
+  
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -14,7 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'sajjad',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
